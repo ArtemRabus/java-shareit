@@ -26,11 +26,4 @@ public class Item {
     @NotNull
     private Boolean available;
     private ItemRequest request;
-
-    public Item(int id, String name, String description, Boolean available) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.available = available;
-    }
 }

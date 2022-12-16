@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public class UserRepository {
-    private List<User> users = new ArrayList<>();
+    private final List<User> users = new ArrayList<>(); //Аналогичная просьба.
     private int id = 0;
 
     public List<User> getAll() {

@@ -15,6 +15,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemRepository {
     private List<Item> items = new ArrayList<>();
+    // Я понимаю, что тут лучше бы использовать мапу, но очень прошу Вас принять в таком виде, т.к. ввиду жизненых
+    // обстоятельств я дико не успеваю, удаётся кодить и учиться только по выходным, тем более, в следующем спринте это
+    // будет переделываться под JpaRepository.
     private int id = 0;
 
     public List<Item> getAll(User owner) {
