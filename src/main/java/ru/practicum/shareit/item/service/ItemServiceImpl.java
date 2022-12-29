@@ -39,7 +39,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDtoInfo> getAll(int ownerId) {
         userRepository.findById(ownerId);
-        log.info("All the user's items were received with id = {} (GetAll())", ownerId);
+        log.info("All the user's items were received with id = {} (getAll())", ownerId);
         return itemRepository.findAllByOwner(ownerId).stream()
                 .map(i -> toItemDtoInfo(i, ownerId))
                 .collect(Collectors.toList());
@@ -49,7 +49,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDtoInfo getById(int id, int ownerId) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Item with id = %s not found", id)));
-        log.info("Found a thing with id = {} (GetById())", id);
+        log.info("Found a thing with id = {} (getById())", id);
         return toItemDtoInfo(item, ownerId);
     }
 

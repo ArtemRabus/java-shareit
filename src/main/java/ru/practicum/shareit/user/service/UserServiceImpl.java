@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     public List<User> getAll() {
-        log.info("A list of all users has been received (GetAll())");
+        log.info("A list of all users has been received (getAll())");
         return userRepository.findAll();
     }
 

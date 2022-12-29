@@ -10,7 +10,9 @@ import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
-
+    @Query("select b from Booking b " +
+            "where b.booker.id = ?1 " +
+            "order by b.id ")
     List<Booking> findAllByBookerId(int bookerId);
 
     @Query(" select b from Item i, Booking b " +
