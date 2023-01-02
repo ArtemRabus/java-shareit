@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
-import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.MessageFailedException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -33,27 +31,15 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getAllByBookerId(@RequestHeader(X_SHARER_USER_ID) int bookerId,
                                              @RequestParam(defaultValue = "ALL") String state) {
-        BookingState state1;
-        try {
-            state1 = BookingState.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            throw new MessageFailedException(String.format("Unknown state: %s", state));
-        }
         log.info("getAllByBookerId() in BookingController");
-        return bookingService.getAllByBookerId(bookerId, state1);
+        return bookingService.getAllByBookerId(bookerId, state);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getBookingByUser(@RequestHeader(X_SHARER_USER_ID) int ownerId,
                                              @RequestParam(defaultValue = "ALL") String state) {
-        BookingState state1;
-        try {
-            state1 = BookingState.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            throw new MessageFailedException(String.format("Unknown state: %s", state));
-        }
         log.info("getBookingByUser() in BookingController");
-        return bookingService.getAllByOwnerId(ownerId, state1);
+        return bookingService.getAllByOwnerId(ownerId, state);
     }
 
     @PostMapping

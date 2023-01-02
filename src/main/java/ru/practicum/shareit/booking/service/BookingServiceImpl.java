@@ -11,6 +11,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.MessageFailedException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.model.Item;
@@ -91,7 +92,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllByBookerId(int bookerId, BookingState state) {
+    public List<BookingDto> getAllByBookerId(int bookerId, String state) {
+        validState(state);
         userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", bookerId)));
         Set<Booking> bookings = new HashSet<>(bookingRepository.findAllByBookerId(bookerId));
@@ -99,12 +101,13 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException("No bookings found");
         } else {
             log.info("All bookings of the user with id = {} (getAllByBookerId()) have been received", bookerId);
-            return filterByState(bookings, state);
+            return filterByState(bookings, BookingState.valueOf(state));
         }
     }
 
     @Override
-    public List<BookingDto> getAllByOwnerId(int ownerId, BookingState state) {
+    public List<BookingDto> getAllByOwnerId(int ownerId, String state) {
+        validState(state);
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", ownerId)));
         Set<Booking> bookings = new HashSet<>(bookingRepository.findAllByOwnerId(ownerId));
@@ -112,7 +115,7 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException("No bookings found");
         } else {
             log.info("All bookings of the user with id = {} have been received (get all by owner id())", ownerId);
-            return filterByState(bookings, state);
+            return filterByState(bookings, BookingState.valueOf(state));
         }
     }
 
@@ -169,11 +172,11 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-//    private void validState(String state) {
-//        try {
-//            BookingState.valueOf(state);
-//        } catch (IllegalArgumentException e) {
-//            throw new MessageFailedException(String.format("Unknown state: %s", state));
-//        }
-//    }
+    private void validState(String state) {
+        try {
+            BookingState.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            throw new MessageFailedException(String.format("Unknown state: %s", state));
+        }
+    }
 }
