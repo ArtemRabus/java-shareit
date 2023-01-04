@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingDtoIn;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
@@ -44,7 +44,7 @@ public class BookingController {
 
     @PostMapping
     public BookingDto create(@RequestHeader(X_SHARER_USER_ID) int userId,
-                             @Valid @RequestBody BookingDtoIn bookingDto) {
+                             @Valid @RequestBody BookingDtoRequest bookingDto) {
         log.info("save() in BookingController");
         return bookingService.save(bookingDto, userId);
     }

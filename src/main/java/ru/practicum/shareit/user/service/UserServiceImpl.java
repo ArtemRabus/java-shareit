@@ -32,7 +32,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDto create(UserDto userDto) {
         User user = userRepository.save(UserMapper.toUserDto(userDto));
         log.info("User with id = {} created", user.getId());
@@ -53,9 +52,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toUser(user);
     }
 
-    @Transactional
     public void delete(int id) {
-        getById(id);
         userRepository.deleteById(id);
         log.info("User with id = {} deleted", id);
     }

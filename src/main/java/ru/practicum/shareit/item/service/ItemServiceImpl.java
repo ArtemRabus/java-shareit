@@ -96,7 +96,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> search(String text, int userId) {
         userRepository.findById(userId);
         List<ItemDto> listItem = new ArrayList<>();
-        if (text.length() != 0) {
+        if (!text.isEmpty()) {
             listItem = itemRepository.search(text).stream()
                     .map(ItemMapper::toItemDto)
                     .collect(Collectors.toList());
@@ -127,10 +127,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDtoInfo toItemDtoInfo(Item item, int ownerId) {
-        Booking lastBooking = bookingRepository.findLastBooking(item.getId(), ownerId)
-                .orElse(null);
-        Booking nextBooking = bookingRepository.findNextBooking(item.getId(), ownerId)
-                .orElse(null);
+        Booking lastBooking = bookingRepository.findLastBooking(item.getId(), ownerId);
+        Booking nextBooking = bookingRepository.findNextBooking(item.getId(), ownerId);
         List<CommentDto> commentDtos = commentRepository.findAllByItemId(item.getId()).stream()
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());

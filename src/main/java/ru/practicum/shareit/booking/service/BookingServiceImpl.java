@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingDtoIn;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
@@ -38,7 +38,8 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getById(int bookingId, int ownerId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("Request with id = %s not found", bookingId)));
-        Item item = itemRepository.findById(booking.getItem().getId()).get();
+        Item item = itemRepository.findById(booking.getItem().getId())
+                .orElseThrow(() -> new NotFoundException(String.format("Item with id = %s not found", booking.getItem().getId())));
         if (booking.getBooker().getId() == ownerId || item.getOwnerId() == ownerId) {
             log.info("Request found with id = {} (GetById())", booking.getId());
             return BookingMapper.toBookingDto(booking);
@@ -48,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto save(BookingDtoIn bookingDtoIn, int ownerId) {
+    public BookingDto save(BookingDtoRequest bookingDtoIn, int ownerId) {
         User booker = userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", ownerId)));
         Item item = itemRepository.findById(bookingDtoIn.getItemId())
