@@ -20,6 +20,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -160,7 +161,7 @@ public class BookingServiceImpl implements BookingService {
                         .collect(Collectors.toList());
                 break;
         }
-        return bookingList;
+        return bookingList.stream().sorted(Comparator.comparing(BookingDto::getStart).reversed()).collect(Collectors.toList());
     }
 
     private void validateBooking(BookingDto bookingDto) {
