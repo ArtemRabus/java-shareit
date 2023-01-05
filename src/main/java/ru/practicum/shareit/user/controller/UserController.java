@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
@@ -29,19 +29,19 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getById(@PathVariable int userId) {
+    public UserDto getById(@PathVariable int userId) {
         log.info("getById() in UserController");
         return userService.getById(userId);
     }
 
     @PostMapping
-    public User saveUser(@Valid @RequestBody UserDto user) {
+    public UserDto createUser(@Valid @RequestBody UserDto user) {
         log.info("save() in UserController");
-        return userService.save(user);
+        return userService.create(user);
     }
 
     @PatchMapping("/{userId}")
-    public User editUser(@RequestBody UserDto user, @PathVariable int userId) {
+    public UserDto editUser(@RequestBody UserDto user, @PathVariable int userId) {
         log.info("edit() in UserController");
         return userService.edit(user, userId);
     }
