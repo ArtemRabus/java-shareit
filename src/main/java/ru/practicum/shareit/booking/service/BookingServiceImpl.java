@@ -2,6 +2,9 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -50,13 +53,15 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto save(BookingDtoRequest bookingDtoIn, int ownerId) {
-        User booker = userRepository.findById(ownerId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", ownerId)));
-        Item item = itemRepository.findById(bookingDtoIn.getItemId())
-                .orElseThrow(() -> new NotFoundException(String.format("Item with id = %s not found", bookingDtoIn.getItemId())));
-        BookingDto bookingDto = BookingMapper.toBookingDto(bookingDtoIn, item);
-        validateBooking(bookingDto);
+    public BookingDto save(int bookerId, BookingDtoRequest bookingDtoRequest) {
+        User booker = userRepository.findById(bookerId)
+                .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", bookerId)));
+        Item item = itemRepository.findById(bookingDtoRequest.getItemId())
+                .orElseThrow(() -> new NotFoundException(String.format("Item with id = %s not found", bookingDtoRequest.getItemId())));
+        BookingDto bookingDto = BookingMapper.toBookingDto(bookingDtoRequest, item);
+        if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
+            throw new ValidateException("The end date of the reservation is earlier than the start date");
+        }
         bookingDto.setItem(item);
         bookingDto.setBooker(booker);
         if (booker.getId() == item.getOwnerId()) {
@@ -73,15 +78,15 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto confirmation(int bookingId, int ownerId, boolean approved) {
+    public BookingDto confirmation(int bookingId, int bookerId, boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("Request with id = %s not found", bookingId)));
-        userRepository.findById(ownerId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", ownerId)));
+        userRepository.findById(bookerId)
+                .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", bookerId)));
         itemRepository.findById(booking.getItem().getId())
                 .orElseThrow(() -> new NotFoundException(String.format("Item with id = %s not found", booking.getItem().getId())));
 
-        if (booking.getItem().getOwnerId() == ownerId) {
+        if (booking.getItem().getOwnerId() == bookerId) {
             if (booking.getStatus().equals(Status.WAITING)) {
                 booking.setStatus(approved ? Status.APPROVED : Status.REJECTED);
             } else {
@@ -94,29 +99,29 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllByBookerId(int bookerId, String state) {
+    public List<BookingDto> getAllByBookerId(int bookerId, String state, int from, int size) {
         validState(state);
         userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", bookerId)));
-        Set<Booking> bookings = new HashSet<>(bookingRepository.findAllByBookerId(bookerId));
+        Page<Booking> bookings = bookingRepository.findAllByBookerId(bookerId, pagination(from, size));
         if (bookings.isEmpty()) {
             throw new NotFoundException("No bookings found");
         } else {
             log.info("All bookings of the user with id = {} (getAllByBookerId()) have been received", bookerId);
-            return filterByState(bookings, BookingState.valueOf(state));
+            return filterByState(bookings.toSet(), BookingState.valueOf(state));
         }
     }
 
     @Override
-    public List<BookingDto> getAllByOwnerId(int ownerId, String state) {
+    public List<BookingDto> getAllByOwnerId(int ownerId, String state, int from, int size) {
         validState(state);
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", ownerId)));
-        Set<Booking> bookings = new HashSet<>(bookingRepository.findAllByOwnerId(ownerId));
+        Set<Booking> bookings = new HashSet<>(bookingRepository.findAllByOwnerId(ownerId, pagination(from, size)));
         if (bookings.isEmpty()) {
             throw new NotFoundException("No bookings found");
         } else {
-            log.info("All bookings of the user with id = {} have been received (get all by owner id())", ownerId);
+            log.info("All bookings of the user with id = {} have been received (getAllByOwnerId())", ownerId);
             return filterByState(bookings, BookingState.valueOf(state));
         }
     }
@@ -161,17 +166,8 @@ public class BookingServiceImpl implements BookingService {
                         .collect(Collectors.toList());
                 break;
         }
-        return bookingList.stream().sorted(Comparator.comparing(BookingDto::getStart).reversed()).collect(Collectors.toList());
-    }
-
-    private void validateBooking(BookingDto bookingDto) {
-        if (bookingDto.getStart().isBefore(LocalDateTime.now()) || bookingDto.getStart() == null) {
-            throw new ValidateException(String.format("The booking start date is not specified or is in the past"));
-        } else if (bookingDto.getEnd().isBefore(LocalDateTime.now()) || bookingDto.getEnd() == null) {
-            throw new ValidateException(String.format("The end date of the reservation is not specified or is in the past"));
-        } else if (bookingDto.getEnd().isBefore(bookingDto.getStart())) {
-            throw new ValidateException(String.format("The end date of the reservation is earlier than the start date"));
-        }
+        return bookingList.stream().sorted(Comparator.comparing(BookingDto::getStart).reversed())
+                .collect(Collectors.toList());
     }
 
     private void validState(String state) {
@@ -180,5 +176,10 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new MessageFailedException(String.format("Unknown state: %s", state));
         }
+    }
+
+    private PageRequest pagination(int from, int size) {
+        int page = from < size ? 0 : from / size;
+        return PageRequest.of(page, size, Sort.by("start").descending());
     }
 }

@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -18,6 +20,7 @@ import ru.practicum.shareit.item.dto.ItemDtoInfo;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -35,12 +38,13 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
-    public List<ItemDtoInfo> getAll(int ownerId) {
+    public List<ItemDtoInfo> getAll(int ownerId, int from, int size) {
         userRepository.findById(ownerId);
         log.info("All the user's items were received with id = {} (getAll())", ownerId);
-        return itemRepository.findAllByOwner(ownerId).stream()
+        return itemRepository.findAllByOwnerId(ownerId, pagination(from, size)).stream()
                 .map(i -> toItemDtoInfo(i, ownerId))
                 .collect(Collectors.toList());
     }
@@ -59,6 +63,11 @@ public class ItemServiceImpl implements ItemService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User c id = %s has no bookings", userId)));
         Item item = ItemMapper.toItem(itemDto);
+        if (itemDto.getRequestId() != null) {
+            item.setItemRequest(itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException(String.format("Request for item with id = %s not found",
+                            itemDto.getRequestId()))));
+        }
         item.setOwnerId(userId);
         log.info("Item with id = {} saved (create())", item.getId());
         return ItemMapper.toItemDto(itemRepository.save(item));
@@ -93,11 +102,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> search(String text, int userId) {
-        userRepository.findById(userId);
+    public List<ItemDto> search(String text, int userId, int from, int size) {
         List<ItemDto> listItem = new ArrayList<>();
         if (!text.isEmpty()) {
-            listItem = itemRepository.search(text).stream()
+            listItem = itemRepository.search(text, pagination(from, size)).stream()
                     .map(ItemMapper::toItemDto)
                     .collect(Collectors.toList());
         }
@@ -141,5 +149,10 @@ public class ItemServiceImpl implements ItemService {
         }
         itemDtoInfo.setComments(commentDtos);
         return itemDtoInfo;
+    }
+
+    private PageRequest pagination(int from, int size) {
+        int page = from / size;
+        return PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
     }
 }

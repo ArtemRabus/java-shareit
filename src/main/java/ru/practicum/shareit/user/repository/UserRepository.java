@@ -9,6 +9,6 @@ import ru.practicum.shareit.user.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
-    @Query("delete from User u where u.id=:id")
+    @Query("delete from User u where u.id = :id")
     void deleteById(int id);
 }
