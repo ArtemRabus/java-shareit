@@ -11,10 +11,10 @@ public interface BookingService {
 
     BookingDto confirmation(int bookingId, int ownerId, boolean approved);
 
-    BookingDto save(BookingDtoRequest bookingDto, int userId);
+    BookingDto save(int userId, BookingDtoRequest bookingDto);
 
-    List<BookingDto> getAllByBookerId(int bookerId, String state);
+    List<BookingDto> getAllByBookerId(int bookerId, String state, int from, int size);
 
-    List<BookingDto> getAllByOwnerId(int ownerId, String state);
+    List<BookingDto> getAllByOwnerId(int ownerId, String state, int from, int size);
 
 }
