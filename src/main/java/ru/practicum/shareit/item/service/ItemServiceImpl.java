@@ -58,7 +58,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public ItemDto create(ItemDto itemDto, int userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User c id = %s has no bookings", userId)));

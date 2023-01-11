@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemRequestDtoOut {
+public class ItemRequestDtoOutput {
     private int id;
     @NotNull
     @NotEmpty

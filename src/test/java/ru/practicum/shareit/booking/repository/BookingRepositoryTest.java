@@ -69,11 +69,11 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByOwnerIdTest() {
-        List<Booking> res = bookingRepository.findAllByOwnerId(owner.getId(), Pageable.unpaged());
+        Page<Booking> res = bookingRepository.findAllByOwnerId(owner.getId(), Pageable.unpaged());
 
         assertNotNull(res);
-        assertEquals(3, res.size());
-        assertEquals(booking1.getItem(), res.get(0).getItem());
+        assertEquals(3, res.getTotalElements());
+        assertEquals(booking1.getItem(), res.toList().get(0).getItem());
     }
 
     @Test

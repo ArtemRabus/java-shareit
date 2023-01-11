@@ -21,8 +21,8 @@ public class ItemRequestMapper {
                 requestor, created);
     }
 
-    public static ItemRequestDtoOut toItemRequestDtoOut(ItemRequest itemRequest, List<ItemDto> items) {
-        return new ItemRequestDtoOut(itemRequest.getId(),
+    public static ItemRequestDtoOutput toItemRequestDtoOut(ItemRequest itemRequest, List<ItemDto> items) {
+        return new ItemRequestDtoOutput(itemRequest.getId(),
                 itemRequest.getDescription(),
                 itemRequest.getCreated(),
                 items);

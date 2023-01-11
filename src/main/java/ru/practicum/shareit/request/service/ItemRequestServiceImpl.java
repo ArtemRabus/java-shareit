@@ -10,7 +10,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestDtoOut;
+import ru.practicum.shareit.request.dto.ItemRequestDtoOutput;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
@@ -30,7 +30,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRepository itemRepository;
 
     @Override
-    @Transactional
     public ItemRequestDto create(int userId, ItemRequestDto itemRequestDto) {
         User requester = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", userId)));
@@ -39,7 +38,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestDtoOut> getAll(int userId) {
+    public List<ItemRequestDtoOutput> getAll(int userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", userId)));
         return itemRequestRepository.findAllByRequesterId(userId).stream()
@@ -48,7 +47,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestDtoOut> getAllOtherUser(int userId, int from, int size) {
+    public List<ItemRequestDtoOutput> getAllOtherUser(int userId, int from, int size) {
         int page = from / size;
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", userId)));
@@ -59,7 +58,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public ItemRequestDtoOut getById(int userId, int requestId) {
+    public ItemRequestDtoOutput getById(int userId, int requestId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", userId)));
         ItemRequest itemRequest = itemRequestRepository.findById(requestId)

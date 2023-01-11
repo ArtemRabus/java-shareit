@@ -10,7 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestDtoOut;
+import ru.practicum.shareit.request.dto.ItemRequestDtoOutput;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
 import java.nio.charset.StandardCharsets;
@@ -35,12 +35,12 @@ class ItemRequestControllerTest {
     MockMvc mockMvc;
     @Autowired
     ObjectMapper mapper;
-    ItemRequestDtoOut itemRequestDtoOut;
+    ItemRequestDtoOutput itemRequestDtoOut;
     ItemRequestDto itemRequestDto;
 
     @BeforeEach
     void init() {
-        itemRequestDtoOut = new ItemRequestDtoOut(1, "descr", LocalDateTime.now(), null);
+        itemRequestDtoOut = new ItemRequestDtoOutput(1, "descr", LocalDateTime.now(), null);
         itemRequestDto = new ItemRequestDto(itemRequestDtoOut.getId(), itemRequestDtoOut.getDescription(),
                 itemRequestDtoOut.getCreated());
     }

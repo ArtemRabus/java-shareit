@@ -117,7 +117,7 @@ public class BookingServiceImpl implements BookingService {
         validState(state);
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", ownerId)));
-        Set<Booking> bookings = new HashSet<>(bookingRepository.findAllByOwnerId(ownerId, pagination(from, size)));
+        Set<Booking> bookings = new HashSet<>(bookingRepository.findAllByOwnerId(ownerId, pagination(from, size)).toList());
         if (bookings.isEmpty()) {
             throw new NotFoundException("No bookings found");
         } else {

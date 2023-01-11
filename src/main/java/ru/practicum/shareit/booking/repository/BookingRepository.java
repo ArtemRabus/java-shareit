@@ -18,7 +18,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     @Query("select b from Booking b " +
             " where b.item.ownerId = :ownerId ")
-    List<Booking> findAllByOwnerId(int ownerId, Pageable page);
+    Page<Booking> findAllByOwnerId(int ownerId, Pageable page);
 
     @Query("select b from Booking b " +
             "where b.item.id = :itemId " +

@@ -307,7 +307,7 @@ class BookingServiceTest {
         when(userRepository.findById(anyInt()))
                 .thenReturn(Optional.of(owner));
         when(bookingRepository.findAllByOwnerId(anyInt(), any(Pageable.class)))
-                .thenReturn(List.of(booking));
+                .thenReturn(new PageImpl<>(List.of(booking)));
 
         List<BookingDto> res = bookingService.getAllByOwnerId(owner.getId(), "WAITING", 0, 3);
 
@@ -320,7 +320,7 @@ class BookingServiceTest {
         when(userRepository.findById(anyInt()))
                 .thenReturn(Optional.of(owner));
         when(bookingRepository.findAllByOwnerId(anyInt(), any(Pageable.class)))
-                .thenReturn(List.of());
+                .thenReturn(new PageImpl<>(List.of()));
 
         Exception ex = assertThrows(NotFoundException.class, () -> bookingService.getAllByOwnerId(owner.getId(),
                 "WAITING", 0, 3));

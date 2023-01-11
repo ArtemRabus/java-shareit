@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestDtoOut;
+import ru.practicum.shareit.request.dto.ItemRequestDtoOutput;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
 import javax.validation.Valid;
@@ -29,21 +29,21 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestDtoOut> getAllByUser(@RequestHeader(X_SHARER_USER_ID) int userId) {
+    public List<ItemRequestDtoOutput> getAllByUser(@RequestHeader(X_SHARER_USER_ID) int userId) {
         log.info("getAllByUser() in ItemRequestController");
         return itemRequestService.getAll(userId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDtoOut> getAllOtherUser(@RequestHeader(X_SHARER_USER_ID) int userId,
-                                                   @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                                   @Positive @RequestParam(defaultValue = "10") int size) {
+    public List<ItemRequestDtoOutput> getAllOtherUser(@RequestHeader(X_SHARER_USER_ID) int userId,
+                                                      @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                                      @Positive @RequestParam(defaultValue = "10") int size) {
         log.info("getAllOtherUser() in ItemRequestController");
         return itemRequestService.getAllOtherUser(userId, from, size);
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDtoOut getById(@RequestHeader(X_SHARER_USER_ID) int userId, @PathVariable int requestId) {
+    public ItemRequestDtoOutput getById(@RequestHeader(X_SHARER_USER_ID) int userId, @PathVariable int requestId) {
         log.info("getById() in ItemRequestController");
         return itemRequestService.getById(userId, requestId);
     }
