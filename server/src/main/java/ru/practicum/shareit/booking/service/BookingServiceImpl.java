@@ -14,7 +14,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.MessageFailedException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.model.Item;
@@ -100,7 +99,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllByBookerId(int bookerId, String state, int from, int size) {
-        validState(state);
         userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", bookerId)));
         Page<Booking> bookings = bookingRepository.findAllByBookerId(bookerId, pagination(from, size));
@@ -114,7 +112,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllByOwnerId(int ownerId, String state, int from, int size) {
-        validState(state);
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", ownerId)));
         Set<Booking> bookings = new HashSet<>(bookingRepository.findAllByOwnerId(ownerId, pagination(from, size)).toList());
@@ -168,14 +165,6 @@ public class BookingServiceImpl implements BookingService {
         }
         return bookingList.stream().sorted(Comparator.comparing(BookingDto::getStart).reversed())
                 .collect(Collectors.toList());
-    }
-
-    private void validState(String state) {
-        try {
-            BookingState.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            throw new MessageFailedException(String.format("Unknown state: %s", state));
-        }
     }
 
     private PageRequest pagination(int from, int size) {

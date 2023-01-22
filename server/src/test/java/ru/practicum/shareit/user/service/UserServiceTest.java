@@ -38,7 +38,7 @@ class UserServiceTest {
         when(userRepository.findAll())
                 .thenReturn(List.of(user));
 
-        final List<User> users = userService.getAll();
+        final List<UserDto> users = userService.getAll();
 
         assertNotNull(users);
         assertEquals(1, users.size());

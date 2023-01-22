@@ -11,17 +11,19 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
-    public List<User> getAll() {
+    public List<UserDto> getAll() {
         log.info("A list of all users has been received (getAll())");
-        return userRepository.findAll();
+        return userRepository.findAll().stream()
+                .map(UserMapper::toUser)
+                .collect(Collectors.toList());
     }
 
     public UserDto getById(int id) {

@@ -12,7 +12,6 @@ import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.MessageFailedException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.model.Item;
@@ -289,17 +288,6 @@ class BookingServiceTest {
 
         assertNotNull(res);
         assertEquals(1, res.size());
-    }
-
-    @Test
-    void getAllByBookerValidStateTest() {
-        when(userRepository.findById(anyInt()))
-                .thenReturn(Optional.of(booker));
-        when(bookingRepository.findAllByBookerId(anyInt(), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(booking)));
-
-        assertThrows(MessageFailedException.class, () -> bookingService.getAllByBookerId(booker.getId(),
-                "ABC", 0, 2));
     }
 
     @Test
