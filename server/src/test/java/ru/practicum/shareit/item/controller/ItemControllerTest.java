@@ -76,19 +76,6 @@ class ItemControllerTest {
     }
 
     @Test
-    void getAllValidateExceptionTest() throws Exception {
-        mockMvc.perform(get("/items")
-                        .header("X-Sharer-User-Id", "1")
-                        .param("from", "-1")
-                        .param("size", "5")
-                        .content(mapper.writeValueAsString(itemDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is5xxServerError());
-    }
-
-    @Test
     void createTest() throws Exception {
         when(itemService.create(any(), anyInt()))
                 .thenReturn(itemDto);

@@ -11,11 +11,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoInfo;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/items")
@@ -28,8 +24,8 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDtoInfo> getAll(@RequestHeader(X_SHARER_USER_ID) int userId,
-                                    @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                    @Positive @RequestParam(defaultValue = "10") int size) {
+                                    @RequestParam(defaultValue = "0") int from,
+                                    @RequestParam(defaultValue = "10") int size) {
         log.info("getAll() in ItemController");
         return itemService.getAll(userId, from, size);
     }
@@ -63,15 +59,15 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> searchItem(@RequestParam String text, @RequestHeader(X_SHARER_USER_ID) int userId,
-                                    @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                    @Positive @RequestParam(defaultValue = "10") int size) {
+                                    @RequestParam(defaultValue = "0") int from,
+                                    @RequestParam(defaultValue = "10") int size) {
         log.info("search() in ItemController");
         return itemService.search(text, userId, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@RequestHeader(X_SHARER_USER_ID) int userId, @PathVariable int itemId,
-                                 @Valid @RequestBody CommentDto comment) {
+                                 @RequestBody CommentDto comment) {
         log.info("addComment() in ItemController");
         return itemService.addComment(userId, itemId, comment);
     }

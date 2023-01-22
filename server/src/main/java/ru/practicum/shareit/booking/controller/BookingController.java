@@ -8,11 +8,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.service.BookingService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -33,8 +29,8 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getAllByBookerId(@RequestHeader(X_SHARER_USER_ID) int bookerId,
                                              @RequestParam(defaultValue = "ALL") String state,
-                                             @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                             @Positive @RequestParam(defaultValue = "10") int size) {
+                                             @RequestParam(defaultValue = "0") int from,
+                                             @RequestParam(defaultValue = "10") int size) {
         log.info("getAllByBookerId() in BookingController");
         return bookingService.getAllByBookerId(bookerId, state, from, size);
     }
@@ -42,15 +38,15 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingDto> getAllByOwnerId(@RequestHeader(X_SHARER_USER_ID) int ownerId,
                                             @RequestParam(defaultValue = "ALL") String state,
-                                            @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                            @Positive @RequestParam(defaultValue = "10") int size) {
+                                            @RequestParam(defaultValue = "0") int from,
+                                            @RequestParam(defaultValue = "10") int size) {
         log.info("getAllByOwnerId() in BookingController");
         return bookingService.getAllByOwnerId(ownerId, state, from, size);
     }
 
     @PostMapping
     public BookingDto create(@RequestHeader(X_SHARER_USER_ID) int userId,
-                             @Valid @RequestBody BookingDtoRequest bookingDto) {
+                             @RequestBody BookingDtoRequest bookingDto) {
         log.info("save() in BookingController");
         return bookingService.save(userId, bookingDto);
     }
