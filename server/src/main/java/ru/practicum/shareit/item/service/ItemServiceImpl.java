@@ -75,7 +75,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDto edit(ItemDto itemDto, int userId, int itemId) {
-        userRepository.findById(userId);
         Item oldItem = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(String.format("Item with id = %s not found", itemId)));
         if (oldItem.getOwnerId() == userId) {
