@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -77,18 +78,18 @@ class BookingRepositoryTest {
     }
 
     @Test
-    void findLastBookingTest() {
-        Booking res = bookingRepository.findLastBooking(item.getId(), owner.getId());
+    void findLastBooking() {
+        Optional<Booking> res = bookingRepository.findLastBooking(item.getId(), owner.getId());
 
-        assertEquals(lastBooking.getId(), res.getId());
-        assertEquals(lastBooking.getStart(), res.getStart());
+        assertEquals(lastBooking.getId(), res.get().getId());
+        assertEquals(lastBooking.getStart(), res.get().getStart());
     }
 
     @Test
-    void findNextBookingTest() {
-        Booking res = bookingRepository.findNextBooking(item.getId(), owner.getId());
+    void findNextBooking() {
+        Optional<Booking> res = bookingRepository.findNextBooking(item.getId(), owner.getId());
 
-        assertEquals(nextBooking.getId(), res.getId());
-        assertEquals(nextBooking.getEnd(), res.getEnd());
+        assertEquals(nextBooking.getId(), res.get().getId());
+        assertEquals(nextBooking.getEnd(), res.get().getEnd());
     }
 }

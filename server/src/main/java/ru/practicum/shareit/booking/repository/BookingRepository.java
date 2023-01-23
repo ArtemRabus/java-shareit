@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
@@ -26,7 +27,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "and b.status = 'APPROVED'" +
             "and b.end < current_timestamp " +
             "order by b.end ")
-    Booking findLastBooking(int itemId, int ownerId);
+    Optional<Booking> findLastBooking(int itemId, int ownerId);
 
     @Query("select b from Booking b " +
             "where b.item.id = :itemId " +
@@ -34,5 +35,5 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "and b.status = 'APPROVED'" +
             "and b.start > current_timestamp " +
             "order by b.start ")
-    Booking findNextBooking(int itemId, int ownerId);
+    Optional<Booking> findNextBooking(int itemId, int ownerId);
 }

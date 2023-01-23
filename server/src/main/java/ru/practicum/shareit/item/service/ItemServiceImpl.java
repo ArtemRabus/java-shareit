@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
+
 @RequiredArgsConstructor
 @Slf4j
 public class ItemServiceImpl implements ItemService {
@@ -134,8 +134,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDtoInfo toItemDtoInfo(Item item, int ownerId) {
-        Booking lastBooking = bookingRepository.findLastBooking(item.getId(), ownerId);
-        Booking nextBooking = bookingRepository.findNextBooking(item.getId(), ownerId);
+        Booking lastBooking = bookingRepository.findLastBooking(item.getId(), ownerId)
+                .orElse(null);
+        Booking nextBooking = bookingRepository.findNextBooking(item.getId(), ownerId)
+                .orElse(null);
         List<CommentDto> commentDtos = commentRepository.findAllByItemId(item.getId()).stream()
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());

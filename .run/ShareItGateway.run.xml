@@ -1,11 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ShareItGateway" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
-    <option name="ACTIVE_PROFILES" />
+  <configuration default="false" name="ShareItGateway" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="ru.practicum.shareit.ShareItGateway" />
     <module name="shareit-gateway" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="ru.practicum.shareit.ShareItGateway" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="ru.practicum.shareit.booking.*" />
+        <option name="PATTERN" value="ru.practicum.shareit.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
