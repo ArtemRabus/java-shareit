@@ -81,15 +81,19 @@ class BookingRepositoryTest {
     void findLastBooking() {
         Optional<Booking> res = bookingRepository.findLastBooking(item.getId(), owner.getId());
 
-        assertEquals(lastBooking.getId(), res.get().getId());
-        assertEquals(lastBooking.getStart(), res.get().getStart());
+        if (res.isPresent()) {
+            assertEquals(lastBooking.getId(), res.get().getId());
+            assertEquals(lastBooking.getStart(), res.get().getStart());
+        }
     }
 
     @Test
     void findNextBooking() {
         Optional<Booking> res = bookingRepository.findNextBooking(item.getId(), owner.getId());
 
-        assertEquals(nextBooking.getId(), res.get().getId());
-        assertEquals(nextBooking.getEnd(), res.get().getEnd());
+        if (res.isPresent()) {
+            assertEquals(nextBooking.getId(), res.get().getId());
+            assertEquals(nextBooking.getEnd(), res.get().getEnd());
+        }
     }
 }

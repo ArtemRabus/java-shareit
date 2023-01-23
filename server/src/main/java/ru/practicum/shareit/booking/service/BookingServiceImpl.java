@@ -79,10 +79,6 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto confirmation(int bookingId, int bookerId, boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException(String.format("Request with id = %s not found", bookingId)));
-        userRepository.findById(bookerId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", bookerId)));
-        itemRepository.findById(booking.getItem().getId())
-                .orElseThrow(() -> new NotFoundException(String.format("Item with id = %s not found", booking.getItem().getId())));
 
         if (booking.getItem().getOwnerId() == bookerId) {
             if (booking.getStatus().equals(Status.WAITING)) {
@@ -111,8 +107,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllByOwnerId(int ownerId, String state, int from, int size) {
-        userRepository.findById(ownerId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", ownerId)));
         Set<Booking> bookings = new HashSet<>(bookingRepository.findAllByOwnerId(ownerId, pagination(from, size)).toList());
         if (bookings.isEmpty()) {
             throw new NotFoundException("No bookings found");

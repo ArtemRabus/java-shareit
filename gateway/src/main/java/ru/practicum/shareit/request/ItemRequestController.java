@@ -38,7 +38,6 @@ public class ItemRequestController {
         return requestClient.getAllByUser(userId);
     }
 
-
     @GetMapping("/all")
     public ResponseEntity<Object> getAllOtherUser(@RequestHeader(X_SHARER_USER_ID) int userId,
                                                   @PositiveOrZero @RequestParam(defaultValue = "0") int from,
@@ -46,7 +45,6 @@ public class ItemRequestController {
         log.info("getAllOtherUser() in ItemRequestController");
         return requestClient.getAllOtherUser(userId, from, size);
     }
-
 
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> getById(@RequestHeader(X_SHARER_USER_ID) int userId, @PathVariable int requestId) {
