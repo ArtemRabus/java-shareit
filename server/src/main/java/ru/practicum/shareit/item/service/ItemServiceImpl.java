@@ -42,7 +42,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDtoInfo> getAll(int ownerId, int from, int size) {
-        userRepository.findById(ownerId);
         log.info("All the user's items were received with id = {} (getAll())", ownerId);
         return itemRepository.findAllByOwnerId(ownerId, pagination(from, size)).stream()
                 .map(i -> toItemDtoInfo(i, ownerId))
@@ -59,8 +58,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto create(ItemDto itemDto, int userId) {
+        // Эти запросы для консистентности базы не лишние, так как в случае, если придется падать на сохранении в itemRepository.save,
+        // то id item все равно автоматически инкрементируется, и дальнейшие проверки тестов с учетом id будут отличаться на единицу.
         userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User c id = %s has no bookings", userId)));
+                .orElseThrow(() -> new NotFoundException(String.format("User with id = %s doesn't exist!", userId)));
         Item item = ItemMapper.toItem(itemDto);
         if (itemDto.getRequestId() != null) {
             item.setItemRequest(itemRequestRepository.findById(itemDto.getRequestId())
@@ -68,8 +69,9 @@ public class ItemServiceImpl implements ItemService {
                             itemDto.getRequestId()))));
         }
         item.setOwnerId(userId);
+        var res = itemRepository.save(item);
         log.info("Item with id = {} saved (create())", item.getId());
-        return ItemMapper.toItemDto(itemRepository.save(item));
+        return ItemMapper.toItemDto(res);
     }
 
     @Override

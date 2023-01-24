@@ -94,8 +94,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllByBookerId(int bookerId, String state, int from, int size) {
-        userRepository.findById(bookerId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", bookerId)));
         Page<Booking> bookings = bookingRepository.findAllByBookerId(bookerId, pagination(from, size));
         if (bookings.isEmpty()) {
             throw new NotFoundException("No bookings found");

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -37,9 +38,15 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoOutput> getAll(int userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", userId)));
-        return itemRequestRepository.findAllByRequesterId(userId).stream()
+        var items = itemRequestRepository.findAllByRequesterId(userId);
+        if (CollectionUtils.isEmpty(items)) {
+            userRepository.findById(userId)
+                    // Есть тест в постмане, который проверяет запрос по неверному id, для него важно отличать,
+                    // если реквестов нет потому что не создавались этим юзером (200) или потому что пользователя не существует (404 или 500)
+                    .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", userId)));
+        }
+        return items
+                .stream()
                 .map(r -> ItemRequestMapper.toItemRequestDtoOut(r, getItems(r.getId())))
                 .collect(Collectors.toList());
     }
@@ -47,8 +54,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDtoOutput> getAllOtherUser(int userId, int from, int size) {
         int page = from / size;
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", userId)));
         return itemRequestRepository.findAllByRequesterIdNot(userId, PageRequest.of(page, size,
                         Sort.by(Sort.Direction.DESC, "created"))).stream()
                 .map(r -> ItemRequestMapper.toItemRequestDtoOut(r, getItems(r.getId())))
@@ -57,11 +62,15 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDtoOutput getById(int userId, int requestId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id = %s not found", userId)));
         ItemRequest itemRequest = itemRequestRepository.findById(requestId)
-                .orElseThrow(() -> new NotFoundException(String.format("Request with user id = %s " +
-                        "with id = %s not found", requestId, userId)));
+                .orElseThrow(() -> new NotFoundException(String.format("Request with id = %s not found", requestId)));
+        if (userId != itemRequest.getRequester().getId()) {
+            // здесь важно проверить, что если другой пользователь хочет посмотреть реквест, то он существует в базе.
+            // избавляюсь от дубля запроса в том случае, если пользователь сам создатель реквеста (если его удалили - то запись реквеста тоже удалится.
+            // совсем избавиться от дубля я не могу
+            userRepository.findById(userId)
+                    .orElseThrow(() -> new NotFoundException(String.format("User id %s not found", userId)));
+        }
         return ItemRequestMapper.toItemRequestDtoOut(itemRequest, getItems(requestId));
     }
 
